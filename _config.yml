@@ -3,8 +3,8 @@ title: QRs'R'Fun
 email: the@bakers.house
 description: >- # this means to ignore newlines until "baseurl:"
   Fun QRs for our wedding guests to interact.
-baseurl: "/qrs" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://qrs.bakers.house" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Build settings
 plugins:
