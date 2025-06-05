@@ -1,0 +1,50 @@
+# Site settings
+title: QRs'R'Fun
+email: the@bakers.house
+description: >- # this means to ignore newlines until "baseurl:"
+  Fun QRs for our wedding guests to interact.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+
+# Build settings
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Theme specific settings
+lang: en-GB
+author:
+  name: The Bakers
+
+# Disable navigation
+navigation_enabled: false
+
+# Reading files
+include:
+  - _pages
+
+# Conversion
+markdown: kramdown
+highlighter: rouge
+
+# Outputting
+permalink: /:title/
+timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - contents.csv
+  - README.md
+
+# Collections
+collections:
+  guest_pages:
+    output: true
+    permalink: /:name/
