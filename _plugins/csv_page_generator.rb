@@ -1,4 +1,6 @@
 require 'csv'
+require 'digest'
+require 'base64'
 
 module Jekyll
   class CsvPage < Page
@@ -6,7 +8,11 @@ module Jekyll
       @site = site
       @base = base
       @dir = dir
-      @name = "#{guest_data['NAME'].downcase.gsub(' ', '-')}.html"
+      
+      # Generate URL-safe hash from the name
+      hash = Digest::SHA256.digest(guest_data['NAME'])
+      url_safe_hash = Base64.urlsafe_encode64(hash).tr('=', '')[0..15]  # Take first 16 chars for shorter URLs
+      @name = "#{url_safe_hash}.html"
       
       self.process(@name)
       self.read_yaml(File.join(base, '_layouts'), 'guest.html')
