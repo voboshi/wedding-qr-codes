@@ -27,19 +27,57 @@ module Jekyll
   
   class CsvPageGenerator < Generator
     safe true
-    
+
     def generate(site)
       csv_file = File.join(site.source, 'contents.csv')
       hash_csv_file = File.join(site.source, 'hash_names.csv')
-      
+
       if File.exist?(csv_file)
+        # First pass: build a lookup map of all guests
+        guests_lookup = {}
+        CSV.foreach(csv_file, headers: true) do |row|
+          guest_data = row.to_h
+          guests_lookup[guest_data['NAME'].strip] = guest_data
+        end
+
+        # Second pass: generate pages with enriched meeting data
         # Open hash_names.csv for writing
         CSV.open(hash_csv_file, 'w', headers: ['NAME', 'HASH', 'URL'], write_headers: true) do |hash_csv|
           CSV.foreach(csv_file, headers: true) do |row|
             guest_data = row.to_h
+
+            # Enrich the MEET_OTHERS data
+            if guest_data['MEET_OTHERS'] && !guest_data['MEET_OTHERS'].empty?
+              # Parse comma-separated names
+              names_to_meet = guest_data['MEET_OTHERS'].split(',').map(&:strip)
+
+              # Build enriched data for each person they should meet
+              enriched_meetings = names_to_meet.map do |name|
+                other_guest = guests_lookup[name]
+                if other_guest
+                  {
+                    'name' => name,
+                    'connection' => other_guest['CONNECTION'],
+                    'interests' => other_guest['INTERESTS']
+                  }
+                else
+                  # If guest not found, just include the name
+                  {
+                    'name' => name,
+                    'connection' => '',
+                    'interests' => ''
+                  }
+                end
+              end
+
+              guest_data['enriched_meetings'] = enriched_meetings
+            else
+              guest_data['enriched_meetings'] = []
+            end
+
             csv_page = CsvPage.new(site, site.source, '', guest_data)
             site.pages << csv_page
-            
+
             # Write to hash_names.csv
             hash_csv << [
               guest_data['NAME'],
@@ -48,7 +86,7 @@ module Jekyll
             ]
           end
         end
-        
+
         Jekyll.logger.info "Generated hash_names.csv with #{site.pages.length} entries"
       else
         Jekyll.logger.warn "CSV file not found at #{csv_file}"
